@@ -11,12 +11,12 @@ typedef struct TreeNode
 	TreeNode* right;
 }TreeNode;
 
-// ����������
+// 构建二叉树
 TreeNode* InitBinaryTree()
 {
 	char c;
-	scanf_s("%c", &c);	// ��ʽ��������Ʒ�����'\n'��\n �ո���Ʊ������ǿհ׷����հ��ַ���ʹscanf()�����ڶ���������ȥ�����е�һ�������հ��ַ���ֻ������һ���ǿհ׷���ʱ�������ֹscanf�����롣
-	getchar();			// ѭ����������������ַ�,��ʱ������¼��һ�������ַ�,����ֹͣ����
+	scanf_s("%c", &c);	// 格式化输出控制符不加'\n'，\n 空格和制表符，是空白符。空白字符会使scanf()函数在读操作中略去输入中的一个或多个空白字符。只有输入一个非空白符的时候才能终止scanf的输入。
+	getchar();		// 循环中连续多次输入字符,此时缓存会记录上一次输入字符,不再停止输入
 
 	if (c == '?')
 	{
@@ -25,10 +25,30 @@ TreeNode* InitBinaryTree()
 
 	TreeNode* root = (TreeNode*)malloc(1*sizeof(TreeNode));
 	root->data = c;
-	root->left = InitBinaryTree();	// �ݹ鹹��������
-	root->right = InitBinaryTree();	// �ݹ鹹��������
+	root->left = InitBinaryTree();	// 递归构建左子树
+	root->right = InitBinaryTree();	// 递归构建右子树
 	
 	return root;
+}
+
+void  PrePrint(TreeNode* root)
+{
+	if (root != NULL)
+	{
+		printf("%c", root->data);
+		EndPrint(root->left);
+		EndPrint(root->right);
+	}
+}
+
+void  MidPrint(TreeNode* root)
+{
+	if (root != NULL)
+	{
+		EndPrint(root->left);
+		printf("%c", root->data);
+		EndPrint(root->right);
+	}
 }
 
 void  EndPrint(TreeNode* root)
@@ -41,17 +61,17 @@ void  EndPrint(TreeNode* root)
 	}
 }
 
-/**************************����ջ*****************************/
+/**************************定义栈*****************************/
 typedef struct StackNode
 {
 	TreeNode* treeNode; 
-	int isFirst; 						// 1:��һ�η��ʽڵ� ; 2:�ڶ��η��ʽڵ�
+	int isFirst; 						// 1:第一次访问节点 ; 2:第二次访问节点
 	StackNode* next;
 }StackNode;
 
 typedef struct Stack
 {
-	StackNode* top;						// ջ��ָ��
+	StackNode* top;						// 栈顶指针
 }Stack;
 
 void InitStack(Stack* s)
@@ -69,7 +89,7 @@ bool IsStackEmpty(Stack* s)
 	return  false;
 }
 
-//TreeNode* GetStackTopValue(Stack* s)	// ��ȡջ���ڵ��ڵ����ڵ�treeNode
+//TreeNode* GetStackTopValue(Stack* s)	// 获取栈顶节点内的树节点treeNode
 //{
 //	if (!IsStackEmpty(s))
 //	{
@@ -77,7 +97,7 @@ bool IsStackEmpty(Stack* s)
 //	}
 //}
 
-StackNode* GetStackTopNode(Stack* s)	// ��ȡջ���ڵ�stackNode
+StackNode* GetStackTopNode(Stack* s)	// 获取栈顶节点stackNode
 {
 	if (!IsStackEmpty(s))
 	{
@@ -85,7 +105,7 @@ StackNode* GetStackTopNode(Stack* s)	// ��ȡջ���ڵ�stackNode
 	}
 }
 
-// ��ջ:��һ����ջ����ռ�
+// 入栈:第一次入栈分配空间
 void PushStackOfLastPrint(Stack* s, TreeNode* root, int isFirst)
 {
 	StackNode* ptr_new = (StackNode*)malloc(1 * sizeof(StackNode));
@@ -110,7 +130,7 @@ void PushStackOfLastPrint(Stack* s, TreeNode* root, int isFirst)
 	//	ptr_new->next = NULL;
 	//}
 	//
-	//ptr_new->isFirst = isFirst;	// �����־λΪ2���������·���ռ䣬ֻ��Ҫ�ı��־λ��ֵ����.
+	//ptr_new->isFirst = isFirst;	// 如果标志位为2，则不用重新分配空间，只需要改变标志位的值即可.
 
 	//ptr_new->next = s->top;
 	//s->top = ptr_new;
@@ -120,11 +140,11 @@ void PushStackOfLastPrint(Stack* s, TreeNode* root, int isFirst)
 //{
 //	if (isFirst == 1)
 //	{
-//		StackNode* ptr_new = (StackNode*)malloc(1 * sizeof(StackNode)); // ��һ�ν�ջmalloc
+//		StackNode* ptr_new = (StackNode*)malloc(1 * sizeof(StackNode)); // 第一次进栈malloc
 //		ptr_new->isFirst = 1;
 //		ptr_new->treeNode = root;
 //		ptr_new->next == NULL;
-//		// ����������
+//		// 加入链表中
 //		ptr_new->next = s->top;
 //		s->top = ptr_new;
 //	}
@@ -137,12 +157,12 @@ void PushStackOfLastPrint(Stack* s, TreeNode* root, int isFirst)
 //	}
 //}
 
-// ��ջ:��һ�γ�ջ���ͷſռ�,�ڶ��γ�ջ�ͷ�
+// 出栈:第一次出栈不释放空间,第二次出栈释放
 StackNode* PopStack(Stack* s)
 {
 	if (!IsStackEmpty(s))
 	{
-		StackNode* tmpNode = GetStackTopNode(s);	// �Ȼ�ȡջ���ڵ㣬���ƶ�topָ�룬����ָ��ʹ�ó���
+		StackNode* tmpNode = GetStackTopNode(s);	// 先获取栈顶节点，再移动top指针，否则指针使用出错
 		s->top = s->top->next;
 		if (tmpNode->isFirst == 2)
 		{
@@ -163,7 +183,7 @@ void BinaryEndPrintNoRecursion(TreeNode* root)
 		while (root != NULL)
 		{
 			PushStackOfLastPrint(&s, root, 1);
-			root = root->left;		// ѭ��������������ֱ��������ΪNULL
+			root = root->left;		// 循环遍历左子树，直到左子树为NULL
 		}
 
 		if (!IsStackEmpty(&s))
@@ -176,13 +196,13 @@ void BinaryEndPrintNoRecursion(TreeNode* root)
 				StackNode* tmpNode = PopStack(&s);
 				st_node->isFirst = 2;
 				PushStackOfLastPrint(&s, root, 2);
-				root = root->right;	// ѭ��������������ֱ��������ΪNULL
+				root = root->right;	// 循环遍历右子树，直到右子树为NULL
 			}
-			else					// ��root����������������ΪNULLʱ�����������ջ
+			else				// 若root左子树和右子树都为NULL时，则输出并出栈
 			{
 				printf("%c\t", root->data);
 				PopStack(&s);
-				root = NULL;		// ֱ��root�ڵ��ΪҶ�ӽڵ㣬������������������ΪNULLʱ
+				root = NULL;		// 直到root节点变为叶子节点，其左子树和右子树都为NULL时
 			}
 		}
 	}
@@ -193,18 +213,18 @@ void BinaryEndPrintNoRecursion(TreeNode* root)
 	//{
 	//	while (root != NULL)
 	//	{
-	//		PushStackOfLastPrint(&st, root, 1);	// ��һ����ջ��־λΪ1
+	//		PushStackOfLastPrint(&st, root, 1);	// 第一次入栈标志位为1
 	//		root = root->left;
 	//	}
 
 	//	if (!IsStackEmpty(&st))
 	//	{
-	//		// ��ȡջ��Ԫ��
+	//		// 获取栈顶元素
 	//		StackNode* StackTopNode = GetStackTopNode(&st);
 	//		root = StackTopNode->treeNode;
 	//		if (StackTopNode->isFirst == 1)
 	//		{
-	//			PopStack(&st); //�ȳ�ջ
+	//			PopStack(&st); //先出栈
 	//			PushStackOfLastPrint(&st, root, 2);
 	//			root = root->right;
 	//		}
@@ -219,12 +239,12 @@ void BinaryEndPrintNoRecursion(TreeNode* root)
 	//}
 }
 
-// ������ȱ�������������queue�ṹ��ʵ�֣�
+// 广度优先遍历（借助队列queue结构来实现）
 void DFS(TreeNode* root)
 {
 	queue<TreeNode*> q;
 	q.push(root);
-	while (!q.empty())				// �����в�Ϊ��ʱ
+	while (!q.empty())				// 当队列不为空时
 	{
 		root = q.front();			// Gets the head element of the queue
 		q.pop();
@@ -241,39 +261,39 @@ void DFS(TreeNode* root)
 }
 
 /*
-    �ܽ᣺���н�㶼��������㣬�ؼ����ں�ʱ���ʡ�ǰ����ջʱ���ʣ����򣺵�һ����ջʱ���ʣ����򣺵ڶ�����ջʱ���ʡ�
+    总结：所有结点都看作根结点，关键在于何时访问。前序：入栈时访问；中序：第一次退栈时访问；后序：第二次退栈时访问。
 	
-	������ȱ���������ջstack�ṹ��ʵ�֣� = ǰ�����
-	dfs:һ��·�ߵ���,��ջʵ��,��ջ����ջ��һ�ѵ���!һ����<�ݹ�>ʵ��
-	bfs: ����˷�,�ö�ʵ��,��ӡ����ӣ�����ΪӪ!һ����<����>ʵ��
-	������ȣ�����<һ��·�ߵ���>��������ȣ�����<ÿ��·��ͬʱ������>��
+	深度优先遍历（借助栈stack结构来实现） = 前序遍历
+	dfs:一条路走的死,用栈实现,进栈、退栈，一搜到底!一般用<递归>实现
+	bfs: 辐射八方,用队实现,入队、出队，步步为营!一般用<迭代>实现
+	深度优先，就是<一条路走到底>，广度优先，就是<每条路都同时派人走>。
 
-	���⣺ɾ��һ�ö����������ͷ�һ�ö��������ڴ棬�ú�����������ʵ�֣�����ġ����ʡ������delete ��㣩.
+	另外：删除一棵二叉树，即释放一棵二叉树的内存，用后续遍历即可实现（这里的“访问”变成了delete 结点）.
 */
 
 int main()
 {
 		
 	TreeNode* root = InitBinaryTree();
-	//printf("�ݹ�ǰ��/������ȱ�����");
+	//printf("递归前序/深度优先遍历：");
 	//PrePrint(root);
 	//printf("\n");
-	//printf("�ݹ�����");
+	//printf("递归中序：");
 	//MidPrint(root);
 	//printf("\n");
-	//printf("�ݹ����");
+	//printf("递归后序：");
 	//EndPrint(root);
-	printf("������ȱ�����");
+	printf("广度优先遍历：");
 	DFS(root);
 	printf("\n");
 
-	//printf("�ǵݹ�ǰ��/������ȱ�����");
+	//printf("非递归前序/深度优先遍历：");
 	//BinaryPrePrintNoRecursion(root);
 	//printf("\n");
-	//printf("�ǵݹ�����");
+	//printf("非递归中序：");
 	//BinaryMidPrintNoRecursion(root);
 	//printf("\n");
-	/*printf("�ǵݹ����");
+	/*printf("非递归后序：");
 	BinaryEndPrintNoRecursion(root);*/
 	printf("\n");
 
@@ -283,13 +303,13 @@ int main()
 }
 
 /*
-	 a
-	/ \
+     a
+    / \
    b   c
   / \
  d   e
 
-�����������ݣ�
+测试输入数据：
 
 a
 b
@@ -302,8 +322,8 @@ e
 c
 ?
 ?
-
-	ջ�ڵ� = ���ڵ� + IsFirst��־λ + ջ��nextָ��
+(回车)
+	栈节点 = 树节点 + IsFirst标志位 + 栈的next指针
 
 */
 
@@ -312,68 +332,68 @@ c
 //#include  <stdio.h>
 //#include  <stdlib.h>
 ///*
-//��(tree):��һ�ַ����Խṹ,��n(n>=0)���ڵ���ɽṹ,�ṹ������ֻ�ܴ���һ���ڵ�Ϊ��,
-//�����Ľڵ�Ϊ�ӽڵ�,n-1���ڵ�Ҳ��һ��������,��һ�ֵݹ鶨��
-//���ŵ�:
-//1.��߲�ѯЧ��
-//�����õĸ���:
-//���ڵ�:ֻ��ֱ�ӵ��������ڵ�,һ�������������.������ֻ�ܴ���һ�����ڵ�
-//�ӽڵ�:���и��ڵ�Ҳ���ӽڵ�,һ�����������м��
-//Ҷ�ӽڵ�:û���ӽڵ�,Ҳ��Ϊ�ն˽ڵ�,�������һ���ڵ�
-//�����:�Ӹ��ڵ㵽���ն�Ҷ�ӽڵ�����·��ֵ
-//�����:�ӽڵ�ӵ���ӽڵ�����ֵ
-//������(binary tree):���Ϊ2����,���ڵ�ֻ�������������ӽڵ�
-//3���ڵ������ɼ��ֶ�����:
-//1.����
-//2.�� ��  ��(����)
-//3.�� �� ��
-//4.�� �� ��
-//5.�� �� ��
-//6.�� �� ��(����)
-//�������ص�:
-//1.���Ϊn�Ķ�����,�ڵ��������:2^n-1
-//2.���Ϊn�Ķ�����,���ն�Ҷ�ӽڵ��������:2(n-1)
-//3.�������һ�ö�����,��Ϊ0�Ľڵ���Ϊn0,��Ϊ1�Ľڵ���Ϊn1,��Ϊ2�Ľڵ���Ϊn2
-//n0 n1 n2֮�����������ϵ:n0=n2+1(�����ܽ����:n0+n1+n2=n0*0+n1*1+n2*2+1(���ڵ�))
+//树(tree):是一种非线性结构,由n(n>=0)个节点组成结构,结构中有且只能存在一个节点为根,
+//其它的节点为子节点,n-1个节点也是一个棵子树,是一种递归定义
+//树优点:
+//1.提高查询效率
+//树常用的概念:
+//根节点:只有直接点无树父节点,一般是在树的最顶层.树有且只能存在一个根节点
+//子节点:既有父节点也有子节点,一般树在树的中间层
+//叶子节点:没有子节点,也称为终端节点,树的最后一个节点
+//树深度:从根节点到达终端叶子节点的最大路径值
+//树广度:子节点拥有子节点的最大值
+//二叉树(binary tree):广度为2的树,树节点只能有左右两个子节点
+//3个节点可以组成几种二叉树:
+//1.空树
+//2.根 左  右(二层)
+//3.根 左 左
+//4.跟 右 右
+//5.根 右 左
+//6.根 左 右(三层)
+//二叉树特点:
+//1.深度为n的二叉树,节点数最多是:2^n-1
+//2.深度为n的二叉树,其终端叶子节点数最多是:2(n-1)
+//3.如果存在一棵二叉树,度为0的节点树为n0,度为1的节点树为n1,度为2的节点树为n2
+//n0 n1 n2之间存在怎样关系:n0=n2+1(根据总结点树:n0+n1+n2=n0*0+n1*1+n2*2+1(根节点))
 //
-//��������:�����ն�Ҷ�ӽڵ�֮���������нڵ��ȶ�Ϊ2,
-//������ڵ���Ϊi,��ڵ���Ϊ2*i,�ҽڵ���Ϊ2*i+1
-//��ȫ������:�����ն�Ҷ�ӽڵ�֮���������нڵ�֮�бض�����һ���ڵ�Ĺ��С��2,��ڵ��ű������Ӧ�����������һ��.(��������������)
-//�������һ����n���ڵ������,��������ֵ��:n-1
-//�������һ����n���ڵ���ȫ������,��������ֵ��:log2(n)+1
-//����������:
-//1.ǰ�����:�� ��  ��
-//2.�������:�� �� ��
-//3.�������:�� �� ��
+//满二叉树:除开终端叶子节点之外其它所有节点广度都为2,
+//如果根节点编号为i,左节点编号为2*i,右节点编号为2*i+1
+//完全二叉树:除开终端叶子节点之外其它所有节点之中必定存在一个节点的广度小于2,其节点编号必须与对应满二叉树编号一致.(必须是现有左孩子)
+//如果存在一个有n个节点二叉树,其深度最大值是:n-1
+//如果存在一个有n个节点完全二叉树,其深度最大值是:log2(n)+1
+//遍历二叉树:
+//1.前序遍历:根 左  右
+//2.中序遍历:左 根 右
+//3.后序遍历:左 右 根
 //
 //*/
-////���ڵ㶨��:
+////树节点定义:
 //typedef  struct tree_node
 //{
 //	char  ch;
-//	//struct tree_node *parent;//ָ����ڵ�
-//	struct tree_node *right;//ָ���Һ���
-//	struct tree_node *left;//ָ������
+//	//struct tree_node *parent;//指向根节点
+//	struct tree_node *right;//指向右孩子
+//	struct tree_node *left;//指向左孩子
 //}tree_node;
 //
-////ջ�ڵ㶨��
+////栈节点定义
 //typedef struct stack_node
 //{
 //	tree_node tree_node_value;
-//	int  is_first;//1:��һ�η��ʽڵ�, 2:�ڶ��η��ʽڵ�
+//	int  is_first;//1:第一次访问节点, 2:第二次访问节点
 //	struct stack_node* next;
 //}stack_node;
-////ջ����
+////栈定义
 //typedef struct stack
 //{
 //	stack_node * top;
 //}stack;
-////��ʼ��ջ
+////初始化栈
 //void   init_stack(stack* st)
 //{
 //	st->top = NULL;
 //}
-////��ջ
+////入栈
 //void   push_stack(stack *st, tree_node * ptr_root, int  is_first)
 //{
 //	if (is_first == 1)
@@ -386,7 +406,7 @@ c
 //		st->top = ptr_new;
 //	}
 //}
-////�ж�ջ�Ƿ�Ϊ��
+////判断栈是否为空
 //int  is_stack_empty(stack* st)
 //{
 //	if (st->top == NULL)
@@ -395,7 +415,7 @@ c
 //	}
 //	return 0;
 //}
-////��ջ
+////出栈
 //void  pop_stack(stack* st)
 //{
 //	if (!is_stack_empty(st))
@@ -409,7 +429,7 @@ c
 //		}
 //	}
 //}
-////��ȡջ��ֵ
+////获取栈顶值
 //stack_node*  get_stack_top_value(stack * st)
 //{
 //	if (!is_stack_empty(st))
@@ -417,24 +437,24 @@ c
 //		return  st->top;
 //	}
 //}
-////������
+////构建树
 //tree_node *  init_binary_tree()
 //{
 //	tree_node * root;
 //	char ch_value;
-//	scanf_s("%c", &ch_value);//ѭ����������������ַ�,��ʱ������¼��һ�������ַ�,����ֹͣ����
-//	getchar();//��ջ���
+//	scanf_s("%c", &ch_value);//循环中连续多次输入字符,此时缓存会记录上一次输入字符,不再停止输入
+//	getchar();//清空缓存
 //	if (ch_value == 'q')
 //	{
 //		return NULL;
 //	}
 //	root = (tree_node*)malloc(1 * sizeof(tree_node));
 //	root->ch = ch_value;
-//	root->left = init_binary_tree();//�ݹ鹹��������
-//	root->right = init_binary_tree();//�ݹ鹹��������
+//	root->left = init_binary_tree();//递归构建左子树
+//	root->right = init_binary_tree();//递归构建右子树
 //	return root;
 //}
-////�ݹ�������
+////递归后序遍历
 //void  binary_last_print(tree_node* root)
 //{
 //	if (root != NULL)
@@ -489,5 +509,5 @@ c
 //	printf("\n");
 //	return 0;
 //}
-////���������������������Ľڵ�(��ǰ�����)
-////�������Ĺ�����������Ľڵ�
+////按照树的深度优先输出树的节点(树前序遍历)
+////按照树的广度优先输出输的节点
