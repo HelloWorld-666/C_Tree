@@ -36,8 +36,8 @@ void  PrePrint(TreeNode* root)
 	if (root != NULL)
 	{
 		printf("%c", root->data);
-		EndPrint(root->left);
-		EndPrint(root->right);
+		PrePrint(root->left);
+		PrePrint(root->right);
 	}
 }
 
@@ -45,9 +45,9 @@ void  MidPrint(TreeNode* root)
 {
 	if (root != NULL)
 	{
-		EndPrint(root->left);
+		MidPrint(root->left);
 		printf("%c", root->data);
-		EndPrint(root->right);
+		MidPrint(root->right);
 	}
 }
 
