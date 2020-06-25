@@ -220,7 +220,7 @@ void BinaryEndPrintNoRecursion(TreeNode* root)
 }
 
 // 广度优先遍历（借助队列queue结构来实现）
-void DFS(TreeNode* root)
+void BFS(TreeNode* root)
 {
 	queue<TreeNode*> q;
 	q.push(root);
@@ -243,7 +243,7 @@ void DFS(TreeNode* root)
 /*
     总结：所有结点都看作根结点，关键在于何时访问。前序：入栈时访问；中序：第一次退栈时访问；后序：第二次退栈时访问。
 	
-	深度优先遍历（借助栈stack结构来实现） = 前序遍历
+	深度优先遍历（借助栈stack结构来实现） = 前中后序遍历
 	dfs:一条路走的死,用栈实现,进栈、退栈，一搜到底!一般用<递归>实现
 	bfs: 辐射八方,用队实现,入队、出队，步步为营!一般用<迭代>实现
 	深度优先，就是<一条路走到底>，广度优先，就是<每条路都同时派人走>。
@@ -264,7 +264,7 @@ int main()
 	//printf("递归后序：");
 	//EndPrint(root);
 	printf("广度优先遍历：");
-	DFS(root);
+	BFS(root);
 	printf("\n");
 
 	//printf("非递归前序/深度优先遍历：");
