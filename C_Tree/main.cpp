@@ -240,7 +240,7 @@ void BinaryEndPrintNoRecursion(TreeNode* root)
 }
 
 // 广度优先遍历（借助队列queue结构来实现）
-void DFS(TreeNode* root)
+void BFS(TreeNode* root)
 {
 	queue<TreeNode*> q;
 	q.push(root);
@@ -284,7 +284,7 @@ int main()
 	//printf("递归后序：");
 	//EndPrint(root);
 	printf("广度优先遍历：");
-	DFS(root);
+	BFS(root);
 	printf("\n");
 
 	//printf("非递归前序/深度优先遍历：");
