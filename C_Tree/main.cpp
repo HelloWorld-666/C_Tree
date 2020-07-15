@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <malloc.h>
+#include <iostream>
+#include <string>
 #include <queue>
+#include <stack>
 
 using namespace std;
 
@@ -29,6 +32,26 @@ TreeNode* InitBinaryTree()
 	root->right = InitBinaryTree();	// 递归构建右子树
 	
 	return root;
+}
+
+void  PrePrint(TreeNode* root)
+{
+	if (root != NULL)
+	{
+		printf("%c", root->data);
+		PrePrint(root->left);
+		PrePrint(root->right);
+	}
+}
+
+void  MidPrint(TreeNode* root)
+{
+	if (root != NULL)
+	{
+		MidPrint(root->left);
+		printf("%c", root->data);
+		MidPrint(root->right);
+	}
 }
 
 void  EndPrint(TreeNode* root)
@@ -154,6 +177,94 @@ StackNode* PopStack(Stack* s)
 	}
 }
 
+void BinaryPrePrintNoRecursion(TreeNode* root)
+{
+	stack<TreeNode*> s;
+	
+	while (root != NULL || !s.empty())
+	{
+		while (root != NULL)
+		{
+			printf("%c", root->data);
+			s.push(root);
+			root = root->left;
+		}
+		// 经过上面的while循环后，此时root->left已为NULL，接下来对root->right操作
+		if (!s.empty())
+		{
+			root = s.top(); // 之前root指向left，所以 root=NULL，需要从栈取出
+			s.pop();
+			root = root->right;
+			//s.push(root);	// error：在while循环中进行push操作
+		}
+	}
+}
+
+void BinaryMidPrintRecursion(TreeNode* root)
+{
+	stack<TreeNode*> s;
+
+	while (root != NULL || !s.empty())
+	{
+		while (root != NULL)
+		{
+			// 依次将 root->left 入栈,直到NULL为止
+			s.push(root);
+			root = root->left;
+		}
+
+		if (!s.empty())
+		{
+			root = s.top();
+			printf("%c", root->data);
+			s.pop();
+			root = root->right;
+		}
+	}
+}
+
+bool isValidBST1(TreeNode* root)
+{
+	queue<TreeNode*> q;
+	q.push(root);
+	while (!q.empty())
+	{
+		root = q.front();
+		//cout << root->data << endl;
+		q.pop();
+		if (root->data < root->left->data || root->data > root->right->data)
+		{
+			return false;
+		}
+		if (root->left != NULL)
+			q.push(root->left);
+		if (root->right != NULL)
+			q.push(root->right);
+	}	
+	return true;
+}
+
+void BFS(TreeNode* root)
+{
+	queue<TreeNode*> q;
+	q.push(root);
+	while (!q.empty())
+	{
+		root = q.front();
+		printf("%c", root->data);
+		q.pop();
+
+		if (root->left != NULL)
+		{
+			q.push(root->left);
+		}
+		if (root->right != NULL)
+		{
+			q.push(root->right);
+		}
+	}
+}
+
 void BinaryEndPrintNoRecursion(TreeNode* root)
 {
 	Stack s;
@@ -219,26 +330,95 @@ void BinaryEndPrintNoRecursion(TreeNode* root)
 	//}
 }
 
-// 广度优先遍历（借助队列queue结构来实现）
-void BFS(TreeNode* root)
+/*******************************************************************************/
+// 输出每条路径（递归：使用当前新结果作为下一次调用的传参）
+void printPath(TreeNode* root, string s)
+{
+	if (root != NULL)
+	{
+		s += root->data;
+		if (root->left == NULL && root->right == NULL)
+		{
+			cout << s << endl;
+		}
+		printPath(root->left, s);
+		printPath(root->right, s);
+	}
+}
+
+// 输出每条路径和
+bool hasPathSum(TreeNode* root, int tmp, int sum)
+{
+	if (root == NULL)
+		return 0;
+	/*if (root != NULL)
+	{*/
+	tmp += root->data;
+	if (root->left == NULL && root->right == NULL)
+	{
+		sum += tmp;
+		cout << "sum = " << sum << endl;
+	}
+	hasPathSum(root->left, tmp, sum);
+	hasPathSum(root->right, tmp, sum);
+	//}
+}
+
+// 二叉树的最大深度
+int maxDepth(TreeNode* root)
+{
+	if (root == NULL)
+		return 0;
+	/*if (root != NULL)
+	{*/
+	int l = maxDepth(root->left)  + 1;
+	int r = maxDepth(root->right) + 1;
+	return l > r ? l : r;
+	//}
+}
+
+// 验证二叉搜索树
+bool isValidBST(TreeNode* root)
 {
 	queue<TreeNode*> q;
 	q.push(root);
-	while (!q.empty())				// 当队列不为空时
+	while (!q.empty())
 	{
-		root = q.front();			// Gets the head element of the queue
+		root = q.front();
+		//cout << root->data << endl;
+		if (root->data < root->left->data || root->data > root->right->data)
+		{
+			return false;
+		}
 		q.pop();
-		printf("%c", root->data);
 		if (root->left != NULL)
-		{
 			q.push(root->left);
-		}
 		if (root->right != NULL)
-		{
 			q.push(root->right);
-		}
 	}
+	return true;
 }
+
+//// 广度优先遍历（借助队列queue结构来实现）
+//void BFS(TreeNode* root)
+//{
+//	queue<TreeNode*> q;
+//	q.push(root);
+//	while (!q.empty())				// 当队列不为空时
+//	{
+//		root = q.front();			// Gets the head element of the queue
+//		q.pop();
+//		printf("%c", root->data);
+//		if (root->left != NULL)
+//		{
+//			q.push(root->left);
+//		}
+//		if (root->right != NULL)
+//		{
+//			q.push(root->right);
+//		}
+	//	}
+	//}
 
 /*
     总结：所有结点都看作根结点，关键在于何时访问。前序：入栈时访问；中序：第一次退栈时访问；后序：第二次退栈时访问。
@@ -263,9 +443,9 @@ int main()
 	//printf("\n");
 	//printf("递归后序：");
 	//EndPrint(root);
-	printf("广度优先遍历：");
-	BFS(root);
-	printf("\n");
+	//printf("广度优先遍历：");
+	//BFS(root);
+	//printf("\n");
 
 	//printf("非递归前序/深度优先遍历：");
 	//BinaryPrePrintNoRecursion(root);
@@ -273,9 +453,24 @@ int main()
 	//printf("非递归中序：");
 	//BinaryMidPrintNoRecursion(root);
 	//printf("\n");
-	/*printf("非递归后序：");
-	BinaryEndPrintNoRecursion(root);*/
-	printf("\n");
+	//printf("非递归后序：");
+	//BinaryEndPrintNoRecursion(root);
+	//printf("\n");
+
+	printf("输出每条路径：");
+	string s = "";
+	printPath(root, s);
+
+	//printf("输出每条路径和：");
+	//int tmp = 0;
+	//int sum = 0;
+	//hasPathSum(root, tmp, sum);
+
+	//printf("二叉树的最大深度：");
+	//cout << maxDepth(root) << endl;
+
+	printf("验证二叉搜索树：");
+	cout << isValidBST(root) << endl;
 
 	getchar();
 
